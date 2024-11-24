@@ -12,7 +12,7 @@ CREATE TABLE role (
     id SERIAL PRIMARY KEY,
     title VARCHAR(30) UNIQUE NOT NULL,
     salary DECIMAL NOT NULL,
-    department_id INTEGER REFERENCES department(id)
+    department_id INTEGER REFERENCES department(id) ON DELETE CASCADE
 );
 
 CREATE TABLE employee (

@@ -166,13 +166,13 @@ const mainMenu = async () => {
             const { updateEmployeeId, newManagerId } = await inquirer.prompt([
                 {
                     type: 'list',
-                    name: 'employeeId',
+                    name: 'updateEmployeeId',
                     message: 'Select the employee to update:',
                     choices: employeeChoices,
                 },
                 {
                     type: 'list',
-                    name: 'managerId',
+                    name: 'newManagerId',
                     message: 'Select the new manager:',
                     choices: managerChoices,
                 },
@@ -256,7 +256,7 @@ const mainMenu = async () => {
             ]);
             const totalBudget = await getDepartmentBudget(departmentIdForBudget);
             console.log(
-                `The total utilized budget for the ${departments.find((department) => department.id === departmentIdForBudget).name} department is $${totalBudget.toLocaleString('en-US')}.`
+                `The total utilized budget for the ${departments.find((department) => department.id === departmentIdForBudget).name} department is $${Number(totalBudget).toLocaleString('en-US')}.`
             );
             break;
 

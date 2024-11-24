@@ -25,6 +25,38 @@ const getEmployees = async () => {
     return result.rows;
 };
 
+const updateEmployeeRole = async (employeeId, roleId) => {
+    const result = await pool.query(
+        `UPDATE employee SET role_id = $1 WHERE id = $2 RETURNING *`,
+        [roleId, employeeId]
+    );
+    return result.rows[0];
+};
+
+const addDepartment = async (departmentName) => {
+    const result = await pool.query(
+        'INSERT INTO department (name) VALUES ($1) RETURNING *',
+        [departmentName]
+    );
+    return result.rows[0];
+};
+
+const addRole = async (title, salary, departmentId) => {
+    const result = await pool.query(
+        'INSERT INTO role (title, salary, department_id) VALUES ($1, $2, $3) RETURNING *',
+        [title, salary, departmentId]
+    );
+    return result.rows[0];
+};
+
+const addEmployee = async (firstName, lastName, roleId, managerId) => {
+    const result = await pool.query(
+        'INSERT INTO employee (first_name, last_name, role_id, manager_id) VALUES ($1, $2, $3, $4) RETURNING *',
+        [firstName, lastName, roleId, managerId]
+    );
+    return result.rows[0];
+};
+
 const updateEmployeeManager = async (employeeId, managerId) => {
     const result = await pool.query(
         `UPDATE employee SET manager_id = $1 WHERE id = $2 RETURNING *`,
@@ -33,9 +65,9 @@ const updateEmployeeManager = async (employeeId, managerId) => {
     return result.rows[0];
 };
 
-const getEmployeesbyManager = async (managerId) => {
+const getEmployeesByManager = async (managerId) => {
     const result = await pool.query(
-        `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department,
+        `SELECT employee.id, employee.first_name, employee.last_name, role.title, department.name AS department
         FROM employee
         JOIN role ON employee.role_id = role.id
         JOIN department ON role.department_id = department.id
@@ -45,9 +77,9 @@ const getEmployeesbyManager = async (managerId) => {
     return result.rows;
 };
 
-const getEmployeesbyDepartment = async (departmentId) => {
+const getEmployeesByDepartment = async (departmentId) => {
     const result = await pool.query(
-        `SELECT employee.id, employee.first_name, employee.last_name, role.title,
+        `SELECT employee.id, employee.first_name, employee.last_name, role.title
         FROM employee
         JOIN role ON employee.role_id = role.id
         WHERE department_id = $1`,
@@ -73,13 +105,13 @@ const deleteEmployee = async (id) => {
 
 const getDepartmentBudget = async (departmentId) => {
     const result = await pool.query(
-        `SELECT SUM(role.salary) AS total_budget
+        `SELECT COALESCE(SUM(role.salary), 0) AS total_budget
         FROM employee
         JOIN role ON employee.role_id = role.id
         WHERE role.department_id = $1`,
         [departmentId]
     );
-    return result.rows[0];
+    return result.rows[0].total_budget;
 };
 
-module.exports = { getDepartments, getRoles, getEmployees, updateEmployeeManager, getEmployeesbyManager, getEmployeesbyDepartment, deleteDepartment, deleteRole, deleteEmployee, getDepartmentBudget };
+module.exports = { getDepartments, getRoles, getEmployees, updateEmployeeRole, addDepartment, addRole, addEmployee, updateEmployeeManager, getEmployeesByManager, getEmployeesByDepartment, deleteDepartment, deleteRole, deleteEmployee, getDepartmentBudget };
